@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "../components/Layout";
-import ProjectList from "../components/ProjectList";
+import ProjectList from "../pages/ProjectList";
 import About from "../components/About";
 import NotFound from "../components/NotFound";
 import BaseInfoProject from "@/pages/BaseInfo";
@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "base-info/:id",
+    path: "project-info/:id",
     element: <BaseInfoProject />,
   }
 ]); 
