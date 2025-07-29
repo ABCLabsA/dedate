@@ -3,7 +3,7 @@ import { SparklesIcon } from "@heroicons/react/24/solid";
 
 const NotFound = () => {
   return (
-    <div className="max-w-2xl mx-auto text-center">
+    <div className="max-w-2xl mx-auto text-center mt-16">
       <div className="mb-8">
         <SparklesIcon className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
         <h1 className="text-6xl font-bold text-zinc-900 dark:text-white mb-4">

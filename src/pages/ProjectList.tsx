@@ -52,7 +52,7 @@ const ProjectList = () => {
 
   // 处理项目点击
   const handleProjectClick = (id: string) => {
-    navigate(`/base-info/${id}`);
+    navigate(`/project-info/${id}`);
   };
 
   // 加载数据
@@ -162,110 +162,102 @@ const ProjectList = () => {
   };
 
   return (
-    <div className="pb-32 md:pb-20">
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">加载中...</p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {list.map((item, idx) => {
-              const status = statusMap[item.status] || statusMap["pending"];
-              return (
-                <div
-                  key={idx}
-                  className="group bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-zinc-100 dark:border-zinc-700 p-6 flex flex-col gap-3 transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 cursor-pointer"
-                  onClick={() => handleProjectClick(item.id)}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <SparklesIcon className="w-6 h-6 text-indigo-400 dark:text-indigo-300" />
-                      <span className="text-lg font-bold text-zinc-900 dark:text-white">
+    <div className="flex flex-col h-full min-h-0">
+      <div className="flex-1">
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="mt-2 text-zinc-600 dark:text-zinc-400">加载中...</p>
+          </div>
+        ) : (
+          <>
+            {/* 分页栏放在顶部 */}
+            {totalPages > 1 && (
+              <div className="w-full overflow-x-auto my-6">
+                <div className="flex justify-center min-w-max">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          className={`cursor-pointer ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
+                        />
+                      </PaginationItem>
+                      {renderPagination()}
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          className={`cursor-pointer ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              </div>
+            )}
+            {/* 项目卡片区 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 md:mt-12 mb-8 px-4 md:px-8 lg:px-16">
+              {list.map((item, idx) => {
+                const status = statusMap[item.status] || statusMap["pending"];
+                return (
+                  <div
+                    key={idx}
+                    className="
+                      group bg-white dark:bg-zinc-800 rounded-2xl shadow-md
+                      border border-zinc-100 dark:border-zinc-700 p-6 flex flex-col gap-3
+                      transition-shadow duration-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer
+                    "
+                    onClick={() => handleProjectClick(item.id)}
+                  >
+                    <div className="flex items-start gap-2">
+                      <SparklesIcon className="w-6 h-6 flex-shrink-0 text-indigo-400 dark:text-indigo-300" />
+                      <span className="text-lg font-bold text-zinc-900 dark:text-white break-words line-clamp-2 leading-snug">
                         {item.name}
                       </span>
                     </div>
-                    <span
-                      className={`inline-flex items-center justify-center gap-1 font-medium rounded-full ${status.bg} ${status.textColor} ${status.border}`}
-                      style={{
-                        minWidth: 64,
-                        minHeight: 28,
-                        maxWidth: 80,
-                        maxHeight: 28,
-                        fontSize: 13,
-                        padding: "0 12px",
-                        lineHeight: "24px",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {status.icon}
-                      {status.text}
-                    </span>
-                  </div>
-                  <div className="text-zinc-700 dark:text-zinc-200 text-sm line-clamp-3">
-                    {item.description}
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {item.tracks.map((track: string, i: number) => (
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        <MapPinIcon className="w-4 h-4 text-pink-400" />
+                        展位：{item.metadata.booth}
+                      </div>
                       <span
-                        key={i}
-                        className="flex items-center gap-1 text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 px-2 py-0.5 rounded-full"
+                        className={`inline-flex items-center justify-center gap-1 font-medium rounded-full ${status.bg} ${status.textColor} ${status.border}`}
+                        style={{
+                          minWidth: 64,
+                          minHeight: 28,
+                          maxWidth: 80,
+                          maxHeight: 28,
+                          fontSize: 13,
+                          padding: "0 12px",
+                          lineHeight: "24px",
+                          whiteSpace: "nowrap",
+                        }}
                       >
-                        <TagIcon className="w-3 h-3 text-indigo-400" />
-                        {track}
+                        {status.icon}
+                        {status.text}
                       </span>
-                    ))}
+                    </div>
+                    <div className="text-zinc-700 dark:text-zinc-200 text-sm line-clamp-3">
+                      {item.description}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {item.tracks.map((track: string, i: number) => (
+                        <span
+                          key={i}
+                          className="flex items-center gap-1 text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 px-2 py-0.5 rounded-full"
+                        >
+                          <TagIcon className="w-3 h-3 text-indigo-400" />
+                          {track}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="mt-2 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    <MapPinIcon className="w-4 h-4 text-pink-400" />
-                    展位：{item.metadata.booth}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {/* 固定在底部的分页组件 */}
-      {totalPages > 1 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-700 shadow-lg z-50">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex flex-col items-center gap-3">
-              {/* 分页信息 */}
-              <div className="text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                第 {currentPage} 页，共 {totalPages} 页，总计 {total} 条记录
-              </div>
-              
-              {/* ShadcnUI 分页组件 */}
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      className={`cursor-pointer ${
-                        currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                      }`}
-                    />
-                  </PaginationItem>
-                  
-                  {renderPagination()}
-                  
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      className={`cursor-pointer ${
-                        currentPage === totalPages ? "pointer-events-none opacity-50" : ""
-                      }`}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                );
+              })}
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
-// import Header from "./Header";
-import Navigation from "./Navigation";
+import Header from "@/components/Header";
 
 const Layout = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-900 py-10 px-4">
-      {/* <Header /> */}
-      <Navigation />
-      <Outlet />
+    <div className="flex flex-col min-h-screen bg-white dark:bg-zinc-900">
+      <Header />
+      <main className="flex-1">
+        <Outlet />
+      </main>
     </div>
   );
 };
