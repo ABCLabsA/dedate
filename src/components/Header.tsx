@@ -32,7 +32,7 @@ const Header = ({ className = "" }: HeaderProps) => {
         {/* 左侧 Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo.svg" alt="Logo" className="w-10 h-10" />
-          <span className="font-bold text-lg text-zinc-900 dark:text-white">Touch</span>
+          <span className="font-bold text-lg text-zinc-900 dark:text-white">DeDate</span>
         </Link>
 
         {/* 右侧 图标按钮区 */}
