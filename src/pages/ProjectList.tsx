@@ -1,8 +1,8 @@
 import { SparklesIcon, MapPinIcon, TagIcon } from "@heroicons/react/24/solid";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { getBaseInfoList } from "../api/base-info";
+import { useProjectStore } from "@/store/projectStore";
 import {
   Pagination,
   PaginationContent,
@@ -42,13 +42,25 @@ const statusMap: Record<
 };
 
 const ProjectList = () => {
-  const [list, setList] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
+  // 从store获取状态和方法
+  const {
+    getCurrentList,
+    getCurrentPagination,
+    getCurrentLoading,
+    getCurrentError,
+    fetchBaseList,
+    setCurrentPage,
+    displayMode,
+  } = useProjectStore();
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const list = getCurrentList();
+  const pagination = getCurrentPagination();
+  const loading = getCurrentLoading();
+  const error = getCurrentError();
+  const currentPage = pagination.page;
+  const totalPages = pagination.totalPages;
 
   // 处理项目点击
   const handleProjectClick = (id: string) => {
@@ -57,17 +69,11 @@ const ProjectList = () => {
 
   // 加载数据
   const loadData = useCallback(async (page: number) => {
-    setLoading(true);
-    try {
-      const res = await getBaseInfoList(page, PAGE_SIZE);
-      setList(res.data.list || []);
-      setTotal(res.data.total || 0);
-    } catch (error) {
-      console.error("加载数据失败:", error);
-    } finally {
-      setLoading(false);
+    if (displayMode === 'base') {
+      await fetchBaseList(page, PAGE_SIZE);
     }
-  }, []);
+    // 搜索模式的数据加载由搜索组件处理
+  }, [fetchBaseList, displayMode]);
 
   // 首次加载
   useEffect(() => {
@@ -76,12 +82,15 @@ const ProjectList = () => {
 
   // 页码变化时重新加载
   useEffect(() => {
-    loadData(currentPage);
-  }, [currentPage, loadData]);
+    if (displayMode === 'base') {
+      loadData(currentPage);
+    }
+  }, [currentPage, displayMode, loadData]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      loadData(page);
     }
   };
 
@@ -161,6 +170,25 @@ const ProjectList = () => {
     return pages;
   };
 
+  // 显示错误信息
+  if (error) {
+    return (
+      <div className="flex flex-col h-full min-h-0">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+            <button
+              onClick={() => loadData(1)}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            >
+              重试
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex-1">
@@ -198,7 +226,7 @@ const ProjectList = () => {
             {/* 项目卡片区 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 md:mt-12 mb-8 px-4 md:px-8 lg:px-16">
               {list.map((item, idx) => {
-                const status = statusMap[item.status] || statusMap["pending"];
+                const status = statusMap[item.status || "pending"] || statusMap["pending"];
                 return (
                   <div
                     key={idx}
@@ -220,22 +248,24 @@ const ProjectList = () => {
                         <MapPinIcon className="w-4 h-4 text-pink-400" />
                         展位：{item.metadata.booth}
                       </div>
-                      <span
-                        className={`inline-flex items-center justify-center gap-1 font-medium rounded-full ${status.bg} ${status.textColor} ${status.border}`}
-                        style={{
-                          minWidth: 64,
-                          minHeight: 28,
-                          maxWidth: 80,
-                          maxHeight: 28,
-                          fontSize: 13,
-                          padding: "0 12px",
-                          lineHeight: "24px",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {status.icon}
-                        {status.text}
-                      </span>
+                      {item.status && (
+                        <span
+                          className={`inline-flex items-center justify-center gap-1 font-medium rounded-full ${status.bg} ${status.textColor} ${status.border}`}
+                          style={{
+                            minWidth: 64,
+                            minHeight: 28,
+                            maxWidth: 80,
+                            maxHeight: 28,
+                            fontSize: 13,
+                            padding: "0 12px",
+                            lineHeight: "24px",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {status.icon}
+                          {status.text}
+                        </span>
+                      )}
                     </div>
                     <div className="text-zinc-700 dark:text-zinc-200 text-sm line-clamp-3">
                       {item.description}
