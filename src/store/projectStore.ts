@@ -60,6 +60,7 @@ export interface ProjectListState {
   // 显示模式控制
   setDisplayMode: (mode: 'base' | 'search') => void;
   setSearchKeyword: (keyword: string) => void;
+  clearSearch: () => void;
   
   // 获取当前显示的数据
   getCurrentList: () => ProjectInfo[];
@@ -194,6 +195,17 @@ export const useProjectStore = create<ProjectListState>((set, get) => ({
   
   setSearchKeyword: (keyword: string) => {
     set({ searchKeyword: keyword });
+  },
+  
+  clearSearch: () => {
+    set({ 
+      displayMode: 'base',
+      searchKeyword: '',
+      searchList: [], 
+      searchPagination: { total: 0, page: 1, pageSize: 9, totalPages: 0 },
+      searchLoading: false,
+      searchError: null
+    });
   },
   
   // 获取当前显示的数据

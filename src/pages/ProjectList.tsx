@@ -51,8 +51,11 @@ const ProjectList = () => {
     getCurrentLoading,
     getCurrentError,
     fetchBaseList,
+    fetchSearchList,
     setCurrentPage,
+    clearSearch,
     displayMode,
+    searchKeyword,
   } = useProjectStore();
 
   const list = getCurrentList();
@@ -67,13 +70,26 @@ const ProjectList = () => {
     navigate(`/project-info/${id}`);
   };
 
+  // 处理清除搜索
+  const handleClearSearch = () => {
+    clearSearch();
+    // 重新加载基础列表
+    loadData(1);
+  };
+
   // 加载数据
   const loadData = useCallback(async (page: number) => {
     if (displayMode === 'base') {
       await fetchBaseList(page, PAGE_SIZE);
+    } else if (displayMode === 'search' && searchKeyword) {
+      // 搜索模式下的分页
+      await fetchSearchList({
+        keyword: searchKeyword,
+        page: page,
+        limit: PAGE_SIZE,
+      });
     }
-    // 搜索模式的数据加载由搜索组件处理
-  }, [fetchBaseList, displayMode]);
+  }, [fetchBaseList, fetchSearchList, displayMode, searchKeyword]);
 
   // 首次加载
   useEffect(() => {
@@ -82,10 +98,10 @@ const ProjectList = () => {
 
   // 页码变化时重新加载
   useEffect(() => {
-    if (displayMode === 'base') {
+    if (displayMode === 'base' || (displayMode === 'search' && searchKeyword)) {
       loadData(currentPage);
     }
-  }, [currentPage, displayMode, loadData]);
+  }, [currentPage, displayMode, loadData, searchKeyword]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -199,6 +215,31 @@ const ProjectList = () => {
           </div>
         ) : (
           <>
+            {/* 搜索状态提示 */}
+            {displayMode === 'search' && searchKeyword && (
+              <div className="mx-4 md:mx-8 lg:mx-16 mt-6 mb-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-700">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                      搜索结果
+                    </span>
+                    <span className="text-sm text-indigo-600 dark:text-indigo-400">
+                      关键词: "{searchKeyword}"
+                    </span>
+                    <span className="text-sm text-indigo-600 dark:text-indigo-400">
+                      共找到 {pagination.total} 个项目
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleClearSearch}
+                    className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200"
+                  >
+                    清除搜索
+                  </button>
+                </div>
+              </div>
+            )}
+            
             {/* 分页栏放在顶部 */}
             {totalPages > 1 && (
               <div className="w-full overflow-x-auto my-6">
