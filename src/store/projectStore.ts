@@ -150,7 +150,7 @@ export const useProjectStore = create<ProjectListState>((set, get) => ({
   fetchSearchList: async (params: SearchProjectParams) => {
     set({ searchLoading: true, searchError: null });
     try {
-      const response = await getSearchProjectInfoList(params);
+      const response:any = await getSearchProjectInfoList(params);
       const { list, total, page: currentPage, pageSize: currentPageSize } = response.data;
       
       set({
