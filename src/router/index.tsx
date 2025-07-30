@@ -4,6 +4,7 @@ import ProjectList from "../pages/ProjectList";
 import About from "../components/About";
 import NotFound from "../components/NotFound";
 import BaseInfoProject from "@/pages/BaseInfo";
+import Login from "@/pages/Login";
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "login",
+        element: <Login />,
       },
       {
         path: "*",

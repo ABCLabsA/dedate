@@ -13,7 +13,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 9;
 
 const statusMap: Record<
   string,
