@@ -1,16 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { authRegisterLogin } from "@/api/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "react-hot-toast";
 import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import { useAuthStore } from "@/store/authStore";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { setAuth } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,13 +26,15 @@ const Login = () => {
           showSuccess("注册成功，请查收邮箱确认激活账号");
         } else {
           showSuccess("登录成功");
-          // 保存token
+          // 使用authStore保存认证信息
           if (res.data.session?.access_token) {
-            localStorage.setItem('access_token', res.data.session.access_token);
-            if (res.data.session.refresh_token) {
-              localStorage.setItem('refresh_token', res.data.session.refresh_token);
-            }
+            setAuth({
+              access_token: res.data.session.access_token,
+              refresh_token: res.data.session.refresh_token || ''
+            });
           }
+          // 跳转到首页
+          navigate('/');
         }
       } else {
         showError(res.message || "登录/注册失败");

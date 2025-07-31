@@ -1,7 +1,15 @@
 import { Link } from "react-router-dom";
-import { InformationCircleIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon, MagnifyingGlassIcon, ChevronDownIcon, UserIcon, Cog6ToothIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import SearchModal from "./SearchModal";
+import { useAuthStore } from "../store/authStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   className?: string;
@@ -10,6 +18,7 @@ interface HeaderProps {
 const Header = ({ className = "" }: HeaderProps) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { is_authorized, clearAuth } = useAuthStore();
 
   // 监听滚动事件
   useEffect(() => {
@@ -21,6 +30,10 @@ const Header = ({ className = "" }: HeaderProps) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    clearAuth();
+  };
 
   return (
     <>
@@ -40,7 +53,7 @@ const Header = ({ className = "" }: HeaderProps) => {
           {/* 搜索按钮 */}
           <button
             type="button"
-            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="cursor-pointer p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             onClick={() => setIsSearchOpen(true)}
             title="搜索"
           >
@@ -55,13 +68,58 @@ const Header = ({ className = "" }: HeaderProps) => {
             <InformationCircleIcon className="w-6 h-6 text-zinc-500 dark:text-zinc-300" />
           </Link>
           
-          {/* 登录按钮 */}
-          <Link
-            to="/login"
-            className="ml-2 px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors font-medium"
-          >
-            登录
-          </Link>
+          {/* 登录状态显示 */}
+          {is_authorized ? (
+            <div className="flex items-center gap-2 ml-2">
+              {/* 用户头像 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="cursor-pointer flex items-center gap-1 p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    {/* 渐变色圆形头像 */}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 via-red-500 to-orange-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-400/20 relative overflow-hidden">
+                      {/* 高光效果 */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-full"></div>
+                      {/* 内阴影效果 */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/10 via-transparent to-transparent rounded-full"></div>
+                      {/* 边缘高光 */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-1 bg-white/30 rounded-full blur-sm"></div>
+                    </div>
+                    <ChevronDownIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-300" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center gap-2">
+                      <UserIcon className="w-4 h-4" />
+                      个人资料
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center gap-2">
+                      <Cog6ToothIcon className="w-4 h-4" />
+                      设置
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
+                  >
+                    <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                    退出登录
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            /* 未登录状态显示登录按钮 */
+            <Link
+              to="/login"
+              className="ml-2 px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors font-medium"
+            >
+              登录
+            </Link>
+          )}
         </div>
       </nav>
 

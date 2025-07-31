@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
+import { useAuthStore } from "@/store/authStore";
 
 export default function LoginConfirm() {
   const [showCheck, setShowCheck] = useState(false);
   const navigate = useNavigate();
+  const { setAuth, is_authorized } = useAuthStore();
 
   useEffect(() => {
     // 检测URL参数并自动登录
@@ -20,28 +22,37 @@ export default function LoginConfirm() {
         // 清除URL中的参数
         window.history.replaceState({}, document.title, window.location.pathname);
         
-        // 保存token到localStorage
-        localStorage.setItem('access_token', accessToken);
-        if (refreshToken) {
-          localStorage.setItem('refresh_token', refreshToken);
+        try {
+          // 直接使用回调中的token，因为用户已经通过邮箱激活
+          setAuth({
+            access_token: accessToken,
+            refresh_token: refreshToken || ''
+          });
+
+          showSuccess("邮箱激活成功，已自动登录！");
+          
+          // 延迟显示对号动画
+          setTimeout(() => {
+            setShowCheck(true);
+          }, 300);
+
+          // 3秒后自动跳转到首页
+          setTimeout(() => {
+            navigate('/');
+          }, 3000);
+        } catch (error) {
+          if (!is_authorized) {
+            showError("激活链接无效或已过期");
+            setTimeout(() => {
+              navigate('/login');
+            }, 2000);
+          }
         }
-
-        showSuccess("邮箱激活成功，已自动登录！");
-        
-        // 延迟显示对号动画
-        setTimeout(() => {
-          setShowCheck(true);
-        }, 300);
-
-        // 3秒后自动跳转到首页
-        setTimeout(() => {
-          navigate('/');
-        }, 3000);
       }
     };
 
     handleAuthCallback();
-  }, [navigate]);
+  }, [navigate, setAuth]);
 
   return (
     <div className="flex flex-1 items-center justify-center h-full mt-20 bg-white dark:bg-zinc-900">
