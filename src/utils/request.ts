@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '@/store/authStore';
 
 // 创建axios实例
 const instance = axios.create({
@@ -12,11 +13,15 @@ const instance = axios.create({
 // 请求拦截器，自动携带JWT Token
 instance.interceptors.request.use(
   (config) => {
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers = config.headers || {};
-    //   config.headers['Authorization'] = `Bearer ${token}`;
-    // }
+    // 从authStore获取认证头
+    const authStore = useAuthStore.getState();
+    const authHeaders = authStore.getAuthHeaders();
+    
+    // 设置认证头
+    if (authHeaders.Authorization) {
+      config.headers.Authorization = authHeaders.Authorization;
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -25,8 +30,26 @@ instance.interceptors.request.use(
 // 响应拦截器，统一处理错误
 instance.interceptors.response.use(
   (response) => response.data,
-  (error) => {
-    // 这里可以根据需要做全局错误提示
+  async (error) => {
+    const { response } = error;
+    
+    // 处理401未授权错误
+    if (response?.status === 401) {
+      const authStore = useAuthStore.getState();
+      
+      // 清除认证状态
+      authStore.clearAuth();
+      
+      // 可以在这里添加重定向到登录页的逻辑
+      // window.location.href = '/login';
+    }
+    
+    // 处理其他错误
+    if (response?.data?.message) {
+      // 可以在这里添加全局错误提示
+      console.error('API Error:', response.data.message);
+    }
+    
     return Promise.reject(error);
   }
 );

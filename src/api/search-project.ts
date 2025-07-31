@@ -35,10 +35,3 @@ export interface SearchResponse {
 export const getSearchProjectInfoList = (params: SearchProjectParams) => {
     return request.post<SearchResponse>('/search/info', params);
 };
-
-// ==============================================================================
-
-// 根据ID获取项目基础信息
-export const getBaseInfoById = (id: string) => {
-    return request.get(`/base-info/${id}`);
-};

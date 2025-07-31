@@ -220,7 +220,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+            className="cursor-pointer p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
           >
             <XMarkIcon className="w-6 h-6 text-zinc-500 dark:text-zinc-400" />
           </button>
