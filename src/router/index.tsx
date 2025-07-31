@@ -4,7 +4,8 @@ import ProjectList from "../pages/ProjectList";
 import About from "../components/About";
 import NotFound from "../components/NotFound";
 import BaseInfoProject from "@/pages/BaseInfo";
-import Login from "@/pages/Login";
+import Login from "@/pages/auth/Login";
+import LoginConfirm from "@/pages/auth/LoginConfirm";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "login-confirm",
+        element: <LoginConfirm />,
       },
       {
         path: "*",
