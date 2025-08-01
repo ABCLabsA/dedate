@@ -13,11 +13,18 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!agreeToTerms) {
+      showError("请先同意用户许可协议");
+      return;
+    }
+    
     setLoading(true);
     try {
       const res: any = await authRegisterLogin(email, password);
@@ -133,6 +140,38 @@ const Login = () => {
               </p>
             </div>
 
+            {/* 用户许可协议 */}
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="agreeToTerms"
+                checked={agreeToTerms}
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                className="mt-1 w-4 h-4 text-indigo-600 bg-zinc-100 border-zinc-300 rounded focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
+                required
+              />
+              <label htmlFor="agreeToTerms" className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                我已阅读并同意{" "}
+                <a 
+                  href="/terms" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline"
+                >
+                  《用户许可协议》
+                </a>
+                {" "}和{" "}
+                <a 
+                  href="/privacy" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline"
+                >
+                  《隐私政策》
+                </a>
+              </label>
+            </div>
+
             {/* 登录按钮 */}
             <Button
               type="submit"
@@ -154,11 +193,11 @@ const Login = () => {
           </form>
 
           {/* 底部说明 */}
-          {/* <div className="mt-6 text-center">
+          <div className="mt-6 text-center">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               登录即表示您同意我们的服务条款和隐私政策
             </p>
-          </div> */}
+          </div>
         </div>
       </div>
       <Toaster />
