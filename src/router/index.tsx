@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "../components/Layout";
 import ProjectList from "../pages/projects/ProjectList";
-import About from "../components/About";
+import About from "../pages/about/About";
 import NotFound from "../components/NotFound";
 import BaseInfoProject from "@/pages/projects/BaseInfo";
 import Login from "@/pages/auth/Login";
@@ -15,6 +15,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <ProjectList />,
+      },
+      {
+        path: "project-info/:id",
+        element: <BaseInfoProject />,
       },
       {
         path: "about",
@@ -33,9 +37,5 @@ export const router = createBrowserRouter([
         element: <NotFound />,
       },
     ],
-  },
-  {
-    path: "project-info/:id",
-    element: <BaseInfoProject />,
   }
 ]); 

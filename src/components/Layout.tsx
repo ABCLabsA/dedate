@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 
 const Layout = () => {
@@ -8,6 +9,7 @@ const Layout = () => {
       <main className="flex-1 pt-16">
         <Outlet />
       </main>
+      <Toaster />
     </div>
   );
 };

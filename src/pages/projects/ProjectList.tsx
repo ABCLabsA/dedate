@@ -3,6 +3,8 @@ import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProjectStore } from "@/store/projectStore";
+import ErrorPage from "@/components/show/ErrorPage";
+import { ProjectListSkeleton } from "@/components/show/Skeleton";
 import {
   Pagination,
   PaginationContent,
@@ -189,19 +191,14 @@ const ProjectList = () => {
   // 显示错误信息
   if (error) {
     return (
-      <div className="flex flex-col h-full min-h-0">
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-            <button
-              onClick={() => loadData(1)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-            >
-              重试
-            </button>
-          </div>
-        </div>
-      </div>
+      <ErrorPage
+        title="加载失败"
+        message={error}
+        showHomeButton={true}
+        showRetryButton={true}
+        showBackButton={false}
+        onRetry={() => loadData(1)}
+      />
     );
   }
 
@@ -209,10 +206,7 @@ const ProjectList = () => {
     <div className="flex flex-col h-full min-h-0">
       <div className="flex-1">
         {loading ? (
-          <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">加载中...</p>
-          </div>
+          <ProjectListSkeleton />
         ) : (
           <>
             {/* 搜索状态提示 */}

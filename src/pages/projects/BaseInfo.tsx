@@ -4,6 +4,8 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { getBaseInfoById } from "@/api/base-info";
 import { SparklesIcon, MapPinIcon, TagIcon } from "@heroicons/react/24/solid";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
+import ErrorPage from "@/components/show/ErrorPage";
+import LoadingPage from "@/components/show/LoadingPage";
 
 const statusMap: Record<
   string,
@@ -68,28 +70,26 @@ const BaseInfoProject = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                    <p className="mt-2 text-zinc-600 dark:text-zinc-400">加载中...</p>
-                </div>
-            </div>
+            <LoadingPage
+                title="加载项目详情"
+                message="正在为您加载项目信息，请稍候"
+                showSpinner={true}
+                showSparkles={false}
+            />
         );
     }
 
     if (error || !project) {
         return (
-            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-red-600 dark:text-red-400 mb-4">{error || "项目不存在"}</p>
-                    <button
-                        onClick={handleBack}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                        返回
-                    </button>
-                </div>
-            </div>
+            <ErrorPage
+                title={error ? "获取项目失败" : "项目不存在"}
+                message={error || "您要查看的项目不存在或已被删除"}
+                showHomeButton={true}
+                showRetryButton={true}
+                showBackButton={true}
+                onRetry={() => window.location.reload()}
+                onBack={() => navigate(-1)}
+            />
         );
     }
 
