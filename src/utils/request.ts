@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
+import { showError } from './toast';
 
 // 创建axios实例
 const instance = axios.create({
@@ -39,6 +40,7 @@ instance.interceptors.response.use(
       
       // 清除认证状态
       authStore.clearAuth();
+      showError('登录查看项目详情');
       
       // 可以在这里添加重定向到登录页的逻辑
       // window.location.href = '/login';

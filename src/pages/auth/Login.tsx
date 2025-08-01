@@ -4,7 +4,7 @@ import { authRegisterLogin } from "@/api/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "react-hot-toast";
-import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles, Info } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { useAuthStore } from "@/store/authStore";
 
@@ -47,70 +47,121 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center h-full mt-20">
-      <Toaster />
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow p-10 space-y-7 border border-zinc-100 dark:border-zinc-800"
-      >
-        <h2 className="text-3xl font-bold text-center text-zinc-900 dark:text-white mb-1">
-          DeDate
-        </h2>
-        <p className="text-center text-zinc-500 dark:text-zinc-400 mb-4">
-          登录您的账户
-        </p>
-        <div>
-          <label className="block text-zinc-700 dark:text-zinc-200 mb-1">邮箱</label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-            <Input
-              type="email"
-              placeholder="请输入邮箱"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="pl-10 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:bg-zinc-800 dark:text-white transition"
-              required
-              autoFocus
-            />
+    <div className="min-h-screen bg-white dark:bg-zinc-900 flex justify-center pt-10">
+      <div className="w-full max-w-md">
+        
+        {/* 登录表单 */}
+        <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-8">
+          {/* Logo 区域 */}
+          <div className="text-center mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+              <Sparkles className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
+              DeDate
+            </h2>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              欢迎回来，登录您的账户
+            </p>
           </div>
-        </div>
-        <div>
-          <label className="block text-zinc-700 dark:text-zinc-200 mb-1">密码</label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="请输入密码"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:bg-zinc-800 dark:text-white transition"
-              required
-              minLength={6}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+
+          {/* 注册提示 */}
+          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-blue-800 dark:text-blue-200 mb-1">
+                  新用户提示
+                </p>
+                <p className="text-blue-700 dark:text-blue-300">
+                  未注册用户首次登录将自动注册账号，请确保邮箱地址正确
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* 邮箱输入 */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-200 mb-2">
+                邮箱地址
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                <Input
+                  type="email"
+                  placeholder="请输入您的邮箱"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="pl-10 py-3 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500 dark:text-white transition-all duration-200"
+                  required
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* 密码输入 */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-200 mb-2">
+                密码
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="请输入您的密码"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="pl-10 pr-10 py-3 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500 dark:text-white transition-all duration-200"
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                密码至少6位字符
+              </p>
+            </div>
+
+            {/* 登录按钮 */}
+            <Button
+              type="submit"
+              className="cursor-pointer w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg disabled:hover:-translate-y-0"
+              disabled={loading}
             >
-              {showPassword ? (
-                <EyeOff size={18} />
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  登录中...
+                </>
               ) : (
-                <Eye size={18} />
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  登录 / 注册
+                </>
               )}
-            </button>
-          </div>
+            </Button>
+          </form>
+
+          {/* 底部说明 */}
+          {/* <div className="mt-6 text-center">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              登录即表示您同意我们的服务条款和隐私政策
+            </p>
+          </div> */}
         </div>
-        <Button
-          type="submit"
-          className="cursor-pointer w-full bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white font-bold py-2 rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 transition flex items-center justify-center gap-2"
-          disabled={loading}
-        >
-          {loading && (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          )}
-          {loading ? "登录中..." : "登录 / 注册"}
-        </Button>
-      </form>
+      </div>
+      <Toaster />
     </div>
   );
 };
