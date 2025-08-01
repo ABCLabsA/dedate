@@ -14,7 +14,7 @@ const LoadingPage = ({
   showSparkles = true,
 }: LoadingPageProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-zinc-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* 加载图标容器 */}
         <div className="relative mb-8">

@@ -96,12 +96,12 @@ const BaseInfoProject = () => {
     const status = statusMap[project.status] || statusMap["pending"];
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+        <div className="min-h-screen bg-white dark:bg-zinc-900">
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {/* 返回按钮 */}
                 <button
                     onClick={handleBack}
-                    className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-6 transition-colors"
+                    className="cursor-pointer flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-6 transition-colors"
                 >
                     <ArrowLeftIcon className="w-5 h-5" />
                     返回列表
