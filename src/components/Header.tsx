@@ -90,13 +90,13 @@ const Header = ({ className = "" }: HeaderProps) => {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center gap-2">
-                      <UserIcon className="w-4 h-4" />
+                      <UserIcon className="w-5 h-5" />
                       个人资料
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/settings" className="flex items-center gap-2">
-                      <Cog6ToothIcon className="w-4 h-4" />
+                      <Cog6ToothIcon className="w-5 h-5" />
                       设置
                     </Link>
                   </DropdownMenuItem>
@@ -105,7 +105,7 @@ const Header = ({ className = "" }: HeaderProps) => {
                     onClick={handleLogout}
                     className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
                   >
-                    <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
                     退出登录
                   </DropdownMenuItem>
                 </DropdownMenuContent>

@@ -14,11 +14,62 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
 
+  // 邮箱格式验证
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("");
+    } else if (!emailRegex.test(email)) {
+      setEmailError("请输入正确的邮箱格式");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  // 密码长度验证
+  const validatePassword = (password: string) => {
+    if (!password) {
+      setPasswordError("");
+    } else if (password.length < 6) {
+      setPasswordError("密码至少需要6位字符");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  // 处理邮箱输入变化
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    validateEmail(value);
+  };
+
+  // 处理密码输入变化
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    validatePassword(value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 检查是否有验证错误
+    if (emailError || passwordError) {
+      showError("请先修正输入错误");
+      return;
+    }
+    
+    // 检查必填字段
+    if (!email || !password) {
+      showError("请填写完整的登录信息");
+      return;
+    }
     
     if (!agreeToTerms) {
       showError("请先同意用户许可协议");
@@ -99,8 +150,10 @@ const Login = () => {
                   type="email"
                   placeholder="请输入您的邮箱"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="pl-10 py-3 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500 dark:text-white transition-all duration-200"
+                  onChange={handleEmailChange}
+                  className={`pl-10 py-3 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500 dark:text-white transition-all duration-200 ${
+                    emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                  }`}
                   required
                   autoFocus
                 />
@@ -118,8 +171,10 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="请输入您的密码"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="pl-10 pr-10 py-3 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500 dark:text-white transition-all duration-200"
+                  onChange={handlePasswordChange}
+                  className={`pl-10 pr-10 py-3 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500 dark:text-white transition-all duration-200 ${
+                    passwordError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                  }`}
                   required
                   minLength={6}
                 />
@@ -135,9 +190,9 @@ const Login = () => {
                   )}
                 </button>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                密码至少6位字符
-              </p>
+              {passwordError && (
+                  <p className="text-xs text-red-500 mt-1">{passwordError}</p>
+                )}
             </div>
 
             {/* 用户许可协议 */}
