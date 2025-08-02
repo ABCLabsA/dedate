@@ -39,8 +39,8 @@ const Header = ({ className = "" }: HeaderProps) => {
     <>
       <nav className={`flex items-center justify-between px-6 py-3 transition-all duration-200 ${
         isScrolled 
-          ? 'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-700/50 shadow-sm' 
-          : 'bg-white dark:bg-zinc-900'
+          ? 'bg-gradient-to-b from-blue-80/95 via-pink-15/95 to-purple-80/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-gray-200/60 dark:border-zinc-700/60 shadow' 
+          : 'bg-gradient-to-b from-blue-45/90 via-blue-40/90 to-purple-45/90 dark:bg-zinc-900/95'
       } ${className}`}>
         {/* 左侧 Logo */}
         <Link to="/" className="flex items-center gap-2">

@@ -98,7 +98,7 @@ const BaseInfoProject = () => {
     const status = statusMap[project.status] || statusMap["pending"];
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-900">
+        <div className="min-h-screen">
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {/* 返回按钮 */}
                 <button
@@ -136,7 +136,7 @@ const BaseInfoProject = () => {
 
                     {/* 展位信息 */}
                     {project.metadata?.booth && (
-                        <div className="flex items-center gap-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                        <div className="flex items-center gap-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-white/60 dark:bg-zinc-800/60 backdrop-blur-sm rounded-lg border border-white/40 dark:border-zinc-700/40">
                             <div className="w-7 h-7 sm:w-8 sm:h-8 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center">
                                 <MapPinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500" />
                             </div>
@@ -159,7 +159,7 @@ const BaseInfoProject = () => {
                                 {project.tracks.map((track: string, i: number) => (
                                     <span
                                         key={i}
-                                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border border-zinc-200 dark:border-zinc-700"
+                                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-white/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-700 dark:text-zinc-300 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border border-white/40 dark:border-zinc-700/40"
                                     >
                                         <TagIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
                                         {track}
@@ -171,11 +171,11 @@ const BaseInfoProject = () => {
 
                     {/* 详细描述 */}
                     {project.detailedDescription && (
-                        <div className="border-t border-zinc-200 dark:border-zinc-700 pt-4 sm:pt-6">
+                        <div className="border-t border-zinc-200/50 dark:border-zinc-700/50 pt-4 sm:pt-6">
                             <h3 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-white mb-3 sm:mb-4">
                                 项目详情
                             </h3>
-                            <div className="text-zinc-600 dark:text-zinc-300 leading-relaxed bg-zinc-50 dark:bg-zinc-800 rounded-lg p-3 sm:p-4 border border-zinc-200 dark:border-zinc-700 prose prose-zinc dark:prose-invert max-w-none">
+                            <div className="text-zinc-600 dark:text-zinc-300 leading-relaxed bg-white/60 dark:bg-zinc-800/60 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/40 dark:border-zinc-700/40 prose prose-zinc dark:prose-invert max-w-none">
                                 <ReactMarkdown 
                                     remarkPlugins={[remarkGfm]}
                                     components={{
