@@ -39,8 +39,8 @@ const Header = ({ className = "" }: HeaderProps) => {
     <>
       <nav className={`flex items-center justify-between px-6 py-3 transition-all duration-200 ${
         isScrolled 
-          ? 'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-700/50 shadow-sm' 
-          : 'bg-white dark:bg-zinc-900'
+          ? 'bg-gradient-to-b from-blue-80/95 via-pink-15/95 to-purple-80/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-gray-200/60 dark:border-zinc-700/60 shadow' 
+          : 'bg-gradient-to-b from-blue-45/90 via-blue-40/90 to-purple-45/90 dark:bg-zinc-900/95'
       } ${className}`}>
         {/* 左侧 Logo */}
         <Link to="/" className="flex items-center gap-2">
@@ -90,13 +90,13 @@ const Header = ({ className = "" }: HeaderProps) => {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center gap-2">
-                      <UserIcon className="w-4 h-4" />
+                      <UserIcon className="w-5 h-5" />
                       个人资料
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/settings" className="flex items-center gap-2">
-                      <Cog6ToothIcon className="w-4 h-4" />
+                      <Cog6ToothIcon className="w-5 h-5" />
                       设置
                     </Link>
                   </DropdownMenuItem>
@@ -105,7 +105,7 @@ const Header = ({ className = "" }: HeaderProps) => {
                     onClick={handleLogout}
                     className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
                   >
-                    <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
                     退出登录
                   </DropdownMenuItem>
                 </DropdownMenuContent>
