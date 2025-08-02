@@ -179,22 +179,22 @@ const BaseInfoProject = () => {
                                 <ReactMarkdown 
                                     remarkPlugins={[remarkGfm]}
                                     components={{
-                                        h1: ({children}) => <h1 className="text-3xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h1>,
-                                        h2: ({children}) => <h2 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-8 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h2>,
-                                        h3: ({children}) => <h3 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-6 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h3>,
-                                        h4: ({children}) => <h4 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-4 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h4>,
-                                        h5: ({children}) => <h5 className="text-base font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h5>,
-                                        h6: ({children}) => <h6 className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h6>,
-                                        p: ({children}) => <p className="mb-3 text-zinc-600 dark:text-zinc-300">{children}</p>,
-                                        ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
-                                        ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
-                                        li: ({children}) => <li className="text-zinc-600 dark:text-zinc-300">{children}</li>,
-                                        code: ({children}) => <code className="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded text-sm font-mono">{children}</code>,
-                                        pre: ({children}) => <pre className="bg-zinc-200 dark:bg-zinc-700 p-3 rounded-lg overflow-x-auto mb-3">{children}</pre>,
-                                        blockquote: ({children}) => <blockquote className="border-l-4 border-zinc-300 dark:border-zinc-600 pl-4 italic text-zinc-600 dark:text-zinc-400 mb-3">{children}</blockquote>,
-                                        a: ({children, href}) => <a href={href} className="text-indigo-600 dark:text-indigo-400 hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
-                                        strong: ({children}) => <strong className="font-semibold text-zinc-900 dark:text-white">{children}</strong>,
-                                        em: ({children}) => <em className="italic">{children}</em>,
+                                        h1: ({children}) => <h1 className="text-4xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h1>,
+                                        h2: ({children}) => <h2 className="text-3xl font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-4 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h2>,
+                                        h3: ({children}) => <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h3>,
+                                        h4: ({children}) => <h4 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h4>,
+                                        h5: ({children}) => <h5 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h5>,
+                                        h6: ({children}) => <h6 className="text-base font-semibold text-indigo-600 dark:text-indigo-400 mb-2 mt-3 pb-2 border-b border-zinc-200 dark:border-zinc-700">{children}</h6>,
+                                        p: ({children}) => <p className="mb-3 text-zinc-600 dark:text-zinc-300 break-words">{children}</p>,
+                                        ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1 break-words">{children}</ul>,
+                                        ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1 break-words">{children}</ol>,
+                                        li: ({children}) => <li className="text-zinc-600 dark:text-zinc-300 break-words">{children}</li>,
+                                        code: ({children}) => <code className="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded text-sm font-mono break-all">{children}</code>,
+                                        pre: ({children}) => <pre className="bg-zinc-200 dark:bg-zinc-700 p-3 rounded-lg overflow-x-auto mb-3 break-words whitespace-pre-wrap">{children}</pre>,
+                                        blockquote: ({children}) => <blockquote className="border-l-4 border-zinc-300 dark:border-zinc-600 pl-4 italic text-zinc-600 dark:text-zinc-400 mb-3 break-words">{children}</blockquote>,
+                                        a: ({children, href}) => <a href={href} className="text-indigo-600 dark:text-indigo-400 hover:underline break-all" target="_blank" rel="noopener noreferrer">{children}</a>,
+                                        strong: ({children}) => <strong className="font-semibold text-zinc-900 dark:text-white break-words">{children}</strong>,
+                                        em: ({children}) => <em className="italic break-words">{children}</em>,
                                     }}
                                 >
                                     {project.detailedDescription}
