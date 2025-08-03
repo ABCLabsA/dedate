@@ -106,7 +106,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-900 flex justify-center pt-10">
+    <div className="min-h-screen flex justify-center pt-10">
       <div className="w-full max-w-md">
         
         {/* 登录表单 */}

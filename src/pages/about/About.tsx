@@ -16,7 +16,7 @@ import {
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900">
+    <div className="min-h-screen ">
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* 头部区域 */}
         <div className="text-center mb-16">
