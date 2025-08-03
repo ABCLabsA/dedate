@@ -11,6 +11,25 @@ const instance = axios.create({
   },
 });
 
+// 用于防止重复刷新token的标志
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: any) => void;
+  reject: (reason?: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token);
+    }
+  });
+  
+  failedQueue = [];
+};
+
 // 请求拦截器，自动携带JWT Token
 instance.interceptors.request.use(
   (config) => {
@@ -32,20 +51,75 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => response.data,
   async (error) => {
-    const { response } = error;
+    const { response, config } = error;
     
     // 处理401未授权错误
     if (response?.status === 401) {
       const authStore = useAuthStore.getState();
       
-      // 清除认证状态
-      authStore.clearAuth();
-      showWarning('登录查看项目详情');
+      // 如果当前请求是刷新token的请求，直接清除认证状态
+      if (config.url?.includes('/auth/refresh-token')) {
+        authStore.clearAuth();
+        showWarning('登录已过期，请重新登录');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+        return Promise.reject(error);
+      }
       
-      // 可以在这里添加重定向到登录页的逻辑
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 2000);
+      // 如果正在刷新token，将请求加入队列
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(() => {
+          return instance(config);
+        }).catch((err) => {
+          return Promise.reject(err);
+        });
+      }
+      
+      isRefreshing = true;
+      
+      try {
+        // 尝试刷新token
+        const refreshSuccess = await authStore.refreshAccessToken();
+        
+        if (refreshSuccess) {
+          // 刷新成功，更新当前请求的认证头
+          const newAuthHeaders = authStore.getAuthHeaders();
+          config.headers.Authorization = newAuthHeaders.Authorization;
+          
+          // 处理队列中的请求
+          processQueue(null, newAuthHeaders.Authorization);
+          
+          // 重试当前请求
+          return instance(config);
+        } else {
+          // 刷新失败，清除认证状态
+          authStore.clearAuth();
+          showWarning('登录已过期，请重新登录');
+          
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
+          
+          processQueue(error, null);
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        // 刷新token时出错
+        authStore.clearAuth();
+        showWarning('登录已过期，请重新登录');
+        
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+        
+        processQueue(refreshError, null);
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
     
     // 处理其他错误

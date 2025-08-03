@@ -26,7 +26,8 @@ export default function LoginConfirm() {
           // 直接使用回调中的token，因为用户已经通过邮箱激活
           setAuth({
             access_token: accessToken,
-            refresh_token: refreshToken || ''
+            refresh_token: refreshToken || '',
+            expires_at: undefined // 从URL参数中无法获取expires_at，设为undefined
           });
 
           showSuccess("邮箱激活成功，已自动登录！");

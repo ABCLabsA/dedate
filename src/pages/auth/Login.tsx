@@ -88,7 +88,8 @@ const Login = () => {
           if (res.data.session?.access_token) {
             setAuth({
               access_token: res.data.session.access_token,
-              refresh_token: res.data.session.refresh_token || ''
+              refresh_token: res.data.session.refresh_token || '',
+              expires_at: res.data.session.expires_at
             });
           }
           // 跳转到首页
