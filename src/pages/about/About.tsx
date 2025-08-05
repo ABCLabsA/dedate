@@ -4,11 +4,11 @@ import {
   UserGroupIcon,
   RocketLaunchIcon,
   LightBulbIcon,
-  ShieldCheckIcon,
+  // ShieldCheckIcon,
   HeartIcon,
   ChatBubbleLeftRightIcon,
-  EnvelopeIcon,
-  GlobeAltIcon as GlobeIcon,
+  // EnvelopeIcon,
+  // GlobeAltIcon as GlobeIcon,
   CommandLineIcon,
   CubeIcon,
   CurrencyDollarIcon
@@ -212,7 +212,7 @@ const About = () => {
         </div>
 
         {/* 联系我们 */}
-        <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl p-8 border border-zinc-200/50 dark:border-zinc-700/50 shadow-lg">
+        {/* <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl p-8 border border-zinc-200/50 dark:border-zinc-700/50 shadow-lg">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">联系我们</h2>
             <p className="text-zinc-600 dark:text-zinc-400 text-lg">让我们一起构建美好的数字未来</p>
@@ -251,7 +251,7 @@ const About = () => {
               <p className="text-zinc-600 dark:text-zinc-400 text-sm">Twitter / LinkedIn</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
