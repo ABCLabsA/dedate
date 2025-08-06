@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { InformationCircleIcon, MagnifyingGlassIcon, ChevronDownIcon, UserIcon, Cog6ToothIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
+import { FaTelegram } from "react-icons/fa";
 import SearchModal from "./SearchModal";
 import { useAuthStore } from "../store/authStore";
 import {
@@ -53,20 +54,31 @@ const Header = ({ className = "" }: HeaderProps) => {
           {/* 搜索按钮 */}
           <button
             type="button"
-            className="cursor-pointer p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="cursor-pointer p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
             onClick={() => setIsSearchOpen(true)}
             title="搜索"
           >
-            <MagnifyingGlassIcon className="w-6 h-6 text-zinc-500 dark:text-zinc-300" />
+            <MagnifyingGlassIcon className="w-6 h-6 text-zinc-500 dark:text-zinc-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
           </button>
 
           <Link
             to="/about"
-            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
             title="关于我们"
           >
-            <InformationCircleIcon className="w-6 h-6 text-zinc-500 dark:text-zinc-300" />
+            <InformationCircleIcon className="w-6 h-6 text-zinc-500 dark:text-zinc-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
           </Link>
+          
+          {/* Telegram官方频道链接 */}
+          <a
+            href="https://t.me/tg_dedate"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
+            title="Telegram官方频道"
+          >
+            <FaTelegram className="w-6 h-6 text-zinc-500 dark:text-zinc-300 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
+          </a>
           
           {/* 登录状态显示 */}
           {is_authorized ? (
