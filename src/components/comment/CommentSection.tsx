@@ -46,11 +46,13 @@ function SingleComment({
   onToggleLike,
   onReplyClick,
   renderContent,
+  likeLoading = false,
 }: {
   data: CommentItem;
   onToggleLike: (id: string) => void;
   onReplyClick: (id: string) => void;
   renderContent: (text: string) => React.ReactNode;
+  likeLoading?: boolean;
 }) {
   return (
     <div className="flex gap-3">
@@ -71,14 +73,20 @@ function SingleComment({
         <div className="flex items-center gap-4 text-sm">
           <button
             onClick={() => onToggleLike(data.id)}
+            disabled={likeLoading}
             className={classNames(
-              "flex items-center gap-1 cursor-pointer transition-colors min-w-[2rem] mb-1",
+              "flex items-center gap-1 transition-colors min-w-[2rem] mb-1",
+              likeLoading 
+                ? "opacity-50 cursor-not-allowed" 
+                : "cursor-pointer",
               data.liked
                 ? "text-indigo-600 dark:text-indigo-400"
                 : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
             )}
           >
-            {data.liked ? (
+            {likeLoading ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : data.liked ? (
               <HandThumbUpSolid className="w-4 h-4" />
             ) : (
               <HandThumbUpOutline className="w-4 h-4" />
@@ -112,6 +120,9 @@ export default function CommentSection({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   // 存储每个评论的回复数据
   const [repliesData, setRepliesData] = useState<Record<string, CommentItem[]>>({});
+  // 添加操作状态管理
+  const [likeLoading, setLikeLoading] = useState<Set<string>>(new Set());
+  const [commentLoading, setCommentLoading] = useState(false);
 
   // 用户名 -> 用户 的映射（用于构造跳转链接）
   const nameToUserMap = useMemo<Record<string, CommentUser>>(() => {
@@ -200,79 +211,236 @@ export default function CommentSection({
     }
   }, [projectId]);
 
+  // 乐观更新点赞状态
   function toggleLike(id: string) {
-    // TODO: 实现点赞/取消点赞的API调用
+    // 设置加载状态
+    setLikeLoading(prev => new Set(prev).add(id));
     
-    // 更新顶级评论
-    setComments((prev) =>
+    // 立即更新UI - 乐观更新
+    const updateLikeState = (prev: CommentItem[]) =>
       prev.map((c) =>
         c.id === id
           ? { ...c, liked: !c.liked, likesCount: c.liked ? c.likesCount - 1 : c.likesCount + 1 }
           : c
-      )
-    );
+      );
     
-    // 更新子评论
+    setComments(updateLikeState);
     setRepliesData((prev) => {
       const newRepliesData = { ...prev };
       Object.keys(newRepliesData).forEach((rootId) => {
-        newRepliesData[rootId] = newRepliesData[rootId].map((reply) =>
-          reply.id === id
-            ? { ...reply, liked: !reply.liked, likesCount: reply.liked ? reply.likesCount - 1 : reply.likesCount + 1 }
-            : reply
-        );
+        newRepliesData[rootId] = updateLikeState(newRepliesData[rootId]);
       });
       return newRepliesData;
     });
+
+    // TODO: 这里调用实际的点赞API
+    // 模拟API调用延迟
+    setTimeout(() => {
+      // 清除加载状态
+      setLikeLoading(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+      
+      // 这里可以添加成功提示
+      // toast.success('操作成功');
+    }, 1000);
   }
 
-  async function insertReply(targetId: string, text: string) {
+  // 乐观更新评论 - 立即渲染到UI
+  async function handleNewTopComment(text: string) {
+    if (!currentUser) return;
+    
+    // 生成临时ID
+    const tempId = `temp_${Date.now()}`;
+    
+    // 创建临时评论对象 - 补充缺失的属性
+    const tempComment: CommentItem = {
+      id: tempId,
+      projectId,
+      userId: currentUser.id,
+      content: text,
+      user: currentUser,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      likesCount: 0,
+      liked: false,
+      dislikesCount: 0,
+      repliesCount: 0,
+      parentId: null,
+      rootId: null,
+      replyToId: null,
+      isDeleted: false, // 添加缺失的属性
+      deletedAt: null // 添加缺失的属性
+    };
+
+    // 立即添加到UI顶部 - 乐观更新
+    setComments(prev => [tempComment, ...prev]);
+    
+    // 设置评论加载状态
+    setCommentLoading(true);
+
     try {
-      const targetComment = comments.find(c => c.id === targetId) || 
-                           Object.values(repliesData).flat().find(r => r.id === targetId);
+      const commentData = {
+        projectId,
+        content: text,
+        parentId: null,
+        rootId: null,
+        replyToId: null
+      };
+
+      const response: any = await addComment(commentData);
+      
+      if (response.code === 200) {
+        // 成功：替换临时评论为真实评论
+        setComments(prev => prev.map(c => 
+          c.id === tempId ? response.data : c
+        ));
+      } else {
+        // 失败：移除临时评论
+        setComments(prev => prev.filter(c => c.id !== tempId));
+        toast.error(response.message || '评论失败');
+      }
+    } catch (error) {
+      // 异常：移除临时评论
+      setComments(prev => prev.filter(c => c.id !== tempId));
+      console.error('评论失败:', error);
+      toast.error('评论失败');
+    } finally {
+      setCommentLoading(false);
+    }
+  }
+
+  // 乐观更新回复评论
+  async function insertReply(targetId: string, text: string) {
+    if (!currentUser) return;
+    
+    // 提升变量到函数作用域
+    let targetComment: CommentItem | undefined;
+    let tempId: string = ''; // 初始化为空字符串
+    
+    try {
+      targetComment = comments.find(c => c.id === targetId) || 
+                     Object.values(repliesData).flat().find(r => r.id === targetId);
       
       if (!targetComment) return;
 
       // 判断是回复顶级评论还是回复子评论
-      const isReplyToTopLevel = !targetComment.parentId; // 没有parentId说明是顶级评论
+      const isReplyToTopLevel = !targetComment.parentId;
       
-      // 正确的评论层级结构：
-      // - 回复顶级评论：parentId = 顶级评论ID，rootId = 顶级评论ID
-      // - 回复子评论：parentId = 被回复的子评论ID，rootId = 顶级评论ID
+      // 生成临时ID
+      tempId = `temp_reply_${Date.now()}`;
+      
+      // 创建临时回复对象
+      const tempReply: CommentItem = {
+        id: tempId,
+        projectId,
+        userId: currentUser.id,
+        content: text,
+        user: currentUser,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        likesCount: 0,
+        liked: false,
+        dislikesCount: 0,
+        repliesCount: 0,
+        parentId: targetComment.id,
+        rootId: isReplyToTopLevel ? targetComment.id : targetComment.rootId,
+        replyToId: targetComment.id,
+        isDeleted: false,
+        deletedAt: null
+      };
+
+      // 立即添加到UI - 乐观更新
+      if (isReplyToTopLevel) {
+        const rootId = targetComment.id;
+        setRepliesData(prev => ({
+          ...prev,
+          [rootId]: [...(prev[rootId] || []), tempReply]
+        }));
+        
+        // 更新顶级评论的回复数量
+        setComments(prev => prev.map(c => 
+          c.id === rootId ? { ...c, repliesCount: c.repliesCount + 1 } : c
+        ));
+      } else {
+        // 回复子评论 - 修复：不要重新加载，而是直接添加临时回复
+        const rootId = targetComment.rootId;
+        if (rootId) {
+          setRepliesData(prev => ({
+            ...prev,
+            [rootId]: [...(prev[rootId] || []), tempReply]
+          }));
+        }
+      }
+
+      // 隐藏回复输入框
+      setReplyTargetId(null);
+
+      // 发送API请求
       const replyData = {
         projectId,
         content: text,
-        parentId: targetComment.id, // 直接父评论就是被回复的评论
-        rootId: isReplyToTopLevel ? targetComment.id : targetComment.rootId, // 线程顶级评论
+        parentId: targetComment.id,
+        rootId: isReplyToTopLevel ? targetComment.id : targetComment.rootId,
         replyToId: targetComment.id
       };
 
       const response: any = await addComment(replyData);
+      
       if (response.code === 200) {
         const newReply = response.data;
         
-        if (isReplyToTopLevel) {
-          // 回复顶级评论，添加到顶级评论的回复列表
-          const rootId = targetComment.id;
+        // 替换临时回复为真实回复
+        const rootId = isReplyToTopLevel ? targetComment.id : targetComment.rootId;
+        if (rootId) {
           setRepliesData(prev => ({
             ...prev,
-            [rootId]: [...(prev[rootId] || []), newReply]
+            [rootId]: (prev[rootId] || []).map(r => 
+              r.id === tempId ? newReply : r
+            )
           }));
-        } else {
-          // 回复子评论，需要重新加载该顶级评论下的所有回复
-          // 因为回复子评论的评论可能有自己的层级结构
-          const rootId = targetComment.rootId;
-          if (rootId) {
-            // 重新加载回复数据，确保层级结构正确
-            loadReplies(rootId);
+        }
+        
+      } else {
+        // 失败：移除临时回复
+        const rootId = isReplyToTopLevel ? targetComment.id : targetComment.rootId;
+        if (rootId) {
+          setRepliesData(prev => ({
+            ...prev,
+            [rootId]: (prev[rootId] || []).filter(r => r.id !== tempId)
+          }));
+          
+          // 如果是回复顶级评论，恢复回复数量
+          if (isReplyToTopLevel) {
+            setComments(prev => prev.map(c => 
+              c.id === rootId ? { ...c, repliesCount: c.repliesCount - 1 } : c
+            ));
           }
         }
         
-        toast.success('回复成功');
-      } else {
         toast.error(response.message || '回复失败');
       }
     } catch (error) {
+      // 异常：移除临时回复
+      if (targetComment && tempId) { // 现在 tempId 总是有值
+        const rootId = targetComment.rootId || targetComment.id;
+        if (rootId) {
+          setRepliesData(prev => ({
+            ...prev,
+            [rootId]: (prev[rootId] || []).filter(r => r.id !== tempId)
+          }));
+          
+          // 如果是回复顶级评论，恢复回复数量
+          if (!targetComment.parentId) {
+            setComments(prev => prev.map(c => 
+              c.id === rootId ? { ...c, repliesCount: c.repliesCount - 1 } : c
+            ));
+          }
+        }
+      }
+      
       console.error('回复失败:', error);
       toast.error('回复失败');
     }
@@ -292,30 +460,6 @@ export default function CommentSection({
     }
   }
 
-  async function handleNewTopComment(text: string) {
-    try {
-      const commentData = {
-        projectId,
-        content: text,
-        parentId: null,
-        rootId: null,
-        replyToId: null
-      };
-
-      const response: any = await addComment(commentData);
-      if (response.code === 200) {
-        const newComment = response.data;
-        setComments(prev => [newComment, ...prev]);
-        toast.success('评论成功');
-      } else {
-        toast.error(response.message || '评论失败');
-      }
-    } catch (error) {
-      console.error('评论失败:', error);
-      toast.error('评论失败');
-    }
-  }
-
   return (
     <div className="w-full">
       {title && (
@@ -326,10 +470,11 @@ export default function CommentSection({
 
       {/* 顶部评论入口 */}
       <CommentComposer
-        currentUser={currentUser}
+        currentUser={currentUser!} // 使用非空断言，或者添加条件渲染
         placeholder={placeholder}
         submitOnEnter
         onSubmit={handleNewTopComment}
+        loading={commentLoading}
       />
 
       {/* 评论列表 */}
@@ -352,6 +497,7 @@ export default function CommentSection({
                     onToggleLike={toggleLike}
                     onReplyClick={handleReplyClick}
                     renderContent={renderContentWithMentions}
+                    likeLoading={likeLoading.has(c.id)}
                   />
 
                   {hasReplies && (
