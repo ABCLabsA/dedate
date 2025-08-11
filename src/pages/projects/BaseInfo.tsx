@@ -333,7 +333,15 @@ const BaseInfoProject = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
                 >
-                    <CommentSection title="讨论区（测试）" />
+                    <CommentSection 
+                        title="讨论区（BETA）" 
+                        projectId={id!}
+                        currentUser={{
+                            id: "default-user-id",
+                            name: "默认用户",
+                            avatar: `https://api.dicebear.com/9.x/big-smile/svg?seed=chensiyu&&flip=true&&backgroundColor=b6e3f4,c0aede,d1d4f9`
+                        }}
+                    />
                 </motion.div>
             </div>
         </motion.div>
