@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ErrorPage from "@/components/show/ErrorPage";
 import LoadingPage from "@/components/show/LoadingPage";
 import CommentSection from "@/components/comment/CommentSection";
-
+import { getCommentUserInfo, type CommentUserInfoResponse } from "@/api/auth";
 const statusMap: Record<
   string,
   {
@@ -45,8 +45,20 @@ const BaseInfoProject = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [userInfo, setUserInfo] = useState<CommentUserInfoResponse | null>(null);
 
     useEffect(() => {
+        const fetchUserInfo = async () => {
+            const response = await getCommentUserInfo();
+            setUserInfo(response as any);
+        };
+
+        fetchUserInfo();
+    }, []);
+
+
+    useEffect(() => {
+        console.log(id);
         const fetchProjectDetail = async () => {
             if (!id) {
                 setError("项目ID不存在");
@@ -327,22 +339,24 @@ const BaseInfoProject = () => {
                 </motion.div>
  
                 {/* 评论测试区块 */}
-                <motion.div
-                    className="mt-6 rounded-xl p-4 sm:p-6 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border border-white/50 dark:border-zinc-700/50 shadow-sm"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                    <CommentSection 
-                        title="讨论区（BETA）" 
-                        projectId={id!}
-                        currentUser={{
-                            id: "default-user-id",
-                            name: "默认用户",
-                            avatar: `https://api.dicebear.com/9.x/big-smile/svg?seed=chensiyu&&flip=true&&backgroundColor=b6e3f4,c0aede,d1d4f9`
-                        }}
-                    />
-                </motion.div>
+                {userInfo && (
+                    <motion.div
+                        className="mt-6 rounded-xl p-4 sm:p-6 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border border-white/50 dark:border-zinc-700/50 shadow-sm"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                    >
+                        <CommentSection 
+                            title="讨论区（BETA）" 
+                            projectId={id!}
+                            currentUser={{
+                                id: userInfo.data.id,
+                                name: userInfo.data.name,
+                                avatar: userInfo.data.avatar
+                            }}
+                        />
+                    </motion.div>
+                )}
             </div>
         </motion.div>
     );

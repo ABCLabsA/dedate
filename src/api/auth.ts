@@ -53,3 +53,21 @@ export const refreshToken = async (refresh_token: string) => {
         refresh_token
     });
 };
+
+
+/**
+ * 获取 comment 用户信息
+ */
+export interface CommentUserInfoResponse {
+    code: number;
+    message: string;
+    data: {
+      id: string;
+      name: string;
+      avatar: string;
+    };
+}
+
+export const getCommentUserInfo = async () => {
+    return await request.get<CommentUserInfoResponse>('/auth/comment/user-info');
+};
