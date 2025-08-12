@@ -1,6 +1,7 @@
 # Local
 ```bash
-pnpm dev
+pnpm install 
+pnpm run dev
 ```
 
 # docker
